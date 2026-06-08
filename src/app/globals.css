@@ -1,26 +1,192 @@
 @import "tailwindcss";
 
+@theme {
+  --color-poppy-blush: var(--poppy-blush);
+  --color-poppy-petal: var(--poppy-petal);
+  --color-poppy-stem: var(--poppy-stem);
+  --color-poppy-leaf: var(--poppy-leaf);
+  --color-poppy-cream: var(--poppy-cream);
+  --color-poppy-soil: var(--poppy-soil);
+  --color-poppy-mist: var(--poppy-mist);
+  --color-poppy-amber: var(--poppy-amber);
+  --color-poppy-sky: var(--poppy-sky);
+  --color-poppy-text-muted: var(--poppy-text-muted);
+
+  --font-fraunces: var(--font-fraunces), serif;
+  --font-dmsans: var(--font-dmsans), sans-serif;
+  --font-dmmono: var(--font-dmmono), monospace;
+  
+  --animate-petal-burst: petal-burst 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-bloom: bloom 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  --animate-slide-up: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-slide-down: slide-down 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-fade-in: fade-in 0.2s ease-out forwards;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Light theme tokens */
+  --poppy-blush: #FF6B8A;
+  --poppy-petal: #FFB3C1;
+  --poppy-stem: #4A7C59;
+  --poppy-leaf: #A8C5A0;
+  --poppy-cream: #FFF8F0;
+  --poppy-soil: #3D2B1F;
+  --poppy-mist: #F5EFE8;
+  --poppy-amber: #F4A261;
+  --poppy-sky: #A8DADC;
+  --poppy-text-muted: #9B8B80;
+
+  --background: var(--poppy-cream);
+  --foreground: var(--poppy-soil);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+:root.dark {
+  /* Dark theme tokens */
+  --poppy-blush: #FF7A97;
+  --poppy-petal: #FFA3B5;
+  --poppy-stem: #5B9C6D;
+  --poppy-leaf: #BDD5B5;
+  --poppy-cream: #14110E;
+  --poppy-soil: #FFF8F0;
+  --poppy-mist: #251E19;
+  --poppy-amber: #F5AF75;
+  --poppy-sky: #BBE1E3;
+  --poppy-text-muted: #B5A599;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: var(--poppy-cream);
+  --foreground: var(--poppy-soil);
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-dmsans), system-ui, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Custom Scrollbar for organic aesthetic */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--poppy-leaf);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--poppy-stem);
+}
+
+/* Animations */
+@keyframes petal-burst {
+  0% {
+    transform: translate(0, 0) scale(0) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--tx), var(--ty)) scale(1) rotate(var(--rot));
+    opacity: 0;
+  }
+}
+
+@keyframes bloom {
+  0% {
+    transform: scale(0.3) rotate(-15deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1) rotate(5deg);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-down {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Micro-interaction utility styles */
+.petal-particle {
+  --tx: 0px;
+  --ty: 0px;
+  --rot: 0deg;
+  position: absolute;
+  pointer-events: none;
+  animation: var(--animate-petal-burst);
+}
+
+/* Hide input range styles or clean styling for dates */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.5) sepia(1) saturate(5) hue-rotate(320deg);
+  cursor: pointer;
+}
+
+.dark input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.9) sepia(1) saturate(5) hue-rotate(320deg);
+}
+
+/* Mobile viewport wrapper to simulate real mobile app on desktop */
+.app-container-frame {
+  max-width: 480px;
+  min-height: 100vh;
+  margin: 0 auto;
+  position: relative;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-col: column;
+}
+
+@media (min-width: 481px) {
+  .app-container-frame {
+    min-height: 840px;
+    height: 840px;
+    border-radius: 40px;
+    margin: 40px auto;
+    border: 12px solid #3D2B1F;
+    overflow: hidden;
+    background-color: var(--background);
+  }
+  .dark .app-container-frame {
+    border-color: #2D2520;
+  }
+  body {
+    background-color: #F0E6DB;
+  }
+  .dark body {
+    background-color: #0E0B09;
+  }
 }

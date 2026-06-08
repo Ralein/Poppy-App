@@ -1,65 +1,119 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import React, { useState, useEffect } from "react";
+import { usePoppyStore } from "@/store/poppyStore";
+import BottomNav, { TabType } from "@/components/BottomNav";
+import QuickAddModal from "@/components/QuickAddModal";
+import DashboardView from "@/components/DashboardView";
+import BirthdaysView from "@/components/BirthdaysView";
+import TasksView from "@/components/TasksView";
+import RemindersView from "@/components/RemindersView";
+import CalendarView from "@/components/CalendarView";
+import { Plus, Sun, Moon } from "@phosphor-icons/react";
+
+export default function AppShell() {
+  const [mounted, setMounted] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabType>("dashboard");
+  const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
+  const [quickAddDefaultTab, setQuickAddDefaultTab] = useState<"birthday" | "task" | "reminder">("task");
+
+  const { theme, toggleTheme } = usePoppyStore();
+
+  useEffect(() => {
+    setMounted(true);
+    // Apply dark class on mount based on store value
+    const storeTheme = usePoppyStore.getState().theme;
+    const root = window.document.documentElement;
+    if (storeTheme === "dark") {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center bg-[#FFF8F0] text-[#3D2B1F]">
+        <div className="flex flex-col items-center gap-3">
+          <span className="text-4xl animate-pulse">🌸</span>
+          <span className="font-fraunces font-bold text-lg tracking-wide">Poppy blooming...</span>
+        </div>
+      </div>
+    );
+  }
+
+  const handleOpenQuickAdd = (tab: "birthday" | "task" | "reminder") => {
+    setQuickAddDefaultTab(tab);
+    setIsQuickAddOpen(true);
+  };
+
+  const renderActiveView = () => {
+    switch (activeTab) {
+      case "dashboard":
+        return <DashboardView onNavigate={setActiveTab} onOpenQuickAdd={handleOpenQuickAdd} />;
+      case "birthdays":
+        return <BirthdaysView onOpenQuickAdd={handleOpenQuickAdd} />;
+      case "tasks":
+        return <TasksView onOpenQuickAdd={handleOpenQuickAdd} />;
+      case "reminders":
+        return <RemindersView onOpenQuickAdd={handleOpenQuickAdd} />;
+      case "calendar":
+        return <CalendarView />;
+      default:
+        return <DashboardView onNavigate={setActiveTab} onOpenQuickAdd={handleOpenQuickAdd} />;
+    }
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="min-h-screen w-full flex flex-col justify-center items-center">
+      {/* simulated mobile wrapper or direct app wrapper */}
+      <div className="app-container-frame w-full bg-poppy-cream dark:bg-[#14110E] flex flex-col shadow-2xl relative overflow-hidden">
+        
+        {/* App Header */}
+        <header className="h-[56px] border-b border-poppy-petal/20 dark:border-[#251E19] bg-white/70 dark:bg-[#14110E]/70 backdrop-blur-md px-5 flex items-center justify-between z-30 select-none">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">🌸</span>
+            <span className="font-fraunces text-2xl font-bold tracking-tight text-poppy-soil dark:text-poppy-cream">
+              Poppy
+            </span>
+          </div>
+
+          {/* Theme Switcher */}
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-xl text-poppy-text-muted hover:text-poppy-soil hover:bg-poppy-mist dark:hover:bg-[#251E19] transition-all focus:outline-none"
+            aria-label="Toggle Dark Mode"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
+          </button>
+        </header>
+
+        {/* Dynamic Screen/View contents */}
+        <main className="flex-1 overflow-hidden flex flex-col relative">
+          {renderActiveView()}
+        </main>
+
+        {/* Floating Action Button (FAB) - Bottom zone reachable */}
+        <div className="absolute bottom-[80px] right-6 z-30">
+          <button
+            onClick={() => handleOpenQuickAdd("task")}
+            className="w-14 h-14 rounded-full bg-poppy-blush hover:bg-poppy-blush/90 text-white flex items-center justify-center shadow-lg active:scale-95 transition-all cursor-pointer focus:outline-none"
+            aria-label="Quick Add Item"
           >
-            Documentation
-          </a>
+            <Plus size={24} weight="bold" />
+          </button>
         </div>
-      </main>
+
+        {/* Bottom Navigation */}
+        <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
+      </div>
+
+      {/* Bottom Sheet Drawer modal */}
+      <QuickAddModal
+        isOpen={isQuickAddOpen}
+        onClose={() => setIsQuickAddOpen(false)}
+        defaultTab={quickAddDefaultTab}
+      />
     </div>
   );
 }
